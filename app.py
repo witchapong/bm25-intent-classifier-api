@@ -12,20 +12,6 @@ BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
 bm25_scorer = None
 itoid = None
 
-def create_app():
-    app = Flask(__name__)
-    app.config['PROPAGATE_EXCEPTIONS'] = True
-    app.secret_key = 'mick'
-    return app
-
-def create_api(app):
-    api = Api(app)
-    api.add_resource(FetchClassifier, '/fetch_classifier')
-    api.add_resource(IntentClassifier, '/intent_classifier')
-
-app = create_app()
-create_api(app)
-
 class IntentClassifier(Resource):
     
     parser = reqparse.RequestParser()
@@ -63,6 +49,20 @@ class FetchClassifier(Resource):
         bm25_scorer = pickle.load(open('bm25_scorer.pkl','rb'))
         itoid = pickle.load(open('itoid.pkl','rb'))
         return {'message': "fecth result from S3 successfully!"}
+
+def create_app():
+    app = Flask(__name__)
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+    app.secret_key = 'mick'
+    return app
+
+def create_api(app):
+    api = Api(app)
+    api.add_resource(FetchClassifier, '/fetch_classifier')
+    api.add_resource(IntentClassifier, '/intent_classifier')
+
+app = create_app()
+create_api(app)
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
